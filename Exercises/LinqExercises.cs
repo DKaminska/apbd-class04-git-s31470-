@@ -173,11 +173,7 @@ public sealed class LinqExercises
     public IEnumerable<string> Task11_JoinStudentsWithEnrollments()
     {
         var resultMethod = UniversityData.Students.Join(UniversityData.Enrollments, student => student.Id, enrollment => enrollment.StudentId,
-    (student, enrollment) => new {
-        student.FirstName,
-        student.LastName,
-        enrollment.EnrollmentDate
-    }).Select(e => $"{e.FirstName},{e.LastName}, {e.EnrollmentDate}");
+    (student, enrollment) => new {student.FirstName, student.LastName,enrollment.EnrollmentDate}).Select(e => $"{e.FirstName},{e.LastName}, {e.EnrollmentDate}");
         return resultMethod;
     }
 
@@ -194,7 +190,10 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task12_StudentCoursePairs()
     {
-        throw NotImplemented(nameof(Task12_StudentCoursePairs));
+        var resultMethod = UniversityData.Enrollments.Join(UniversityData.Students, enrollment => enrollment.StudentId, student => student.Id,
+     (enrollment, student) => new { student, enrollment }).Join(UniversityData.Courses, enrollm=> enrollm.enrollment.CourseId, course => course.Id,
+     (enrollm, course)=> new { enrollm.student.FirstName, enrollm.student.LastName, course.Title }).Select(e => $"{e.FirstName},{e.LastName}, {e.Title}");
+        return resultMethod;
     }
 
     /// <summary>
