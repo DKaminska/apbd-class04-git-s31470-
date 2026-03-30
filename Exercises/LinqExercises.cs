@@ -1,3 +1,4 @@
+using System.Xml.XPath;
 using LinqConsoleLab.EN.Data;
 using LinqConsoleLab.EN.Models;
 namespace LinqConsoleLab.EN.Exercises;
@@ -208,7 +209,13 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task13_GroupEnrollmentsByCourse()
     {
-        throw NotImplemented(nameof(Task13_GroupEnrollmentsByCourse));
+        var resultMethod = UniversityData.Courses
+    .Join(UniversityData.Enrollments,
+          c => c.Id,
+          e => e.CourseId,
+          (c, e) => new { c, e })
+    .GroupBy(x => x.c.Title).Select(g => $"{g.Key}: {g.Count()}");
+        return resultMethod;
     }
 
     /// <summary>
@@ -225,7 +232,15 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task14_AverageGradePerCourse()
     {
-        throw NotImplemented(nameof(Task14_AverageGradePerCourse));
+       var resultMethod = UniversityData.Courses
+    .Join(UniversityData.Enrollments,
+          c => c.Id,
+          e => e.CourseId,
+          (c, e) => new { c, e })
+    .Where(f => f.e.FinalGrade != null) 
+    .GroupBy(f => f.c.Title)
+    .Select(g => $"{g.Key}: {g.Average(x => x.e.FinalGrade)}");
+        return resultMethod;
     }
 
     /// <summary>
