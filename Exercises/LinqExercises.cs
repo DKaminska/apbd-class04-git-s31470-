@@ -157,7 +157,7 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task10_SecondPageOfCourses()
     {
-        //return UniversityData.Courses
+        throw NotImplemented(nameof(Task10_SecondPageOfCourses));
     }
 
     /// <summary>
@@ -172,7 +172,13 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task11_JoinStudentsWithEnrollments()
     {
-        return UniversityData.Students.Join(d, s => s.Id, d => d.StudentId)
+        var resultMethod = UniversityData.Students.Join(UniversityData.Enrollments, student => student.Id, enrollment => enrollment.StudentId,
+    (student, enrollment) => new {
+        student.FirstName,
+        student.LastName,
+        enrollment.EnrollmentDate
+    }).Select(e => $"{e.FirstName},{e.LastName}, {e.EnrollmentDate}");
+        return resultMethod;
     }
 
     /// <summary>
