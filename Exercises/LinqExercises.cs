@@ -1,3 +1,4 @@
+using System.Diagnostics.Metrics;
 using System.Xml.XPath;
 using LinqConsoleLab.EN.Data;
 using LinqConsoleLab.EN.Models;
@@ -236,7 +237,7 @@ public sealed class LinqExercises
     .Join(UniversityData.Enrollments,
           c => c.Id,
           e => e.CourseId,
-          (c, e) => new { c, e })
+          (c, e) => new {c, e})
     .Where(f => f.e.FinalGrade != null) 
     .GroupBy(f => f.c.Title)
     .Select(g => $"{g.Key}: {g.Average(x => x.e.FinalGrade)}");
@@ -256,7 +257,16 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task15_LecturersAndCourseCounts()
     {
-        throw NotImplemented(nameof(Task15_LecturersAndCourseCounts));
+        var resultMethod = UniversityData.Lecturers
+    .GroupJoin(UniversityData.Courses,
+          l => l.Id,
+          c => c.LecturerId,
+          (l,c) => new { 
+            Name = $"{l.FirstName} {l.LastName}",
+            Count = c.Count()
+          })
+    .Select(g => $"{g.Name}: {g.Count} ");
+        return resultMethod;
     }
 
     /// <summary>
@@ -273,7 +283,15 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task16_HighestGradePerStudent()
     {
-        throw NotImplemented(nameof(Task16_HighestGradePerStudent));
+        var resultMethod = UniversityData.Students
+    .Join(UniversityData.Enrollments,
+          s => s.Id,
+          e => e.StudentId,
+          (s, e) => new { s, e })
+    .Where(f => f.e.FinalGrade != null)
+    .GroupBy(f => (f.s.FirstName, f.s.LastName))
+    .Select(g => $"{g.Key}: {g.Max(x => x.e.FinalGrade)}");
+        return resultMethod;
     }
 
     /// <summary>
@@ -291,7 +309,17 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Challenge01_StudentsWithMoreThanOneActiveCourse()
     {
-        throw NotImplemented(nameof(Challenge01_StudentsWithMoreThanOneActiveCourse));
+        var resultMethod = UniversityData.Students
+    .GroupJoin(UniversityData.Enrollments,
+          s => s.Id,
+          e => e.StudentId,
+          (s, e) => new {
+              s,
+              Counter = e.Count(e=> e.IsActive)
+          })
+    .Where(f => f.Counter > 1)
+    .Select(f => $"{f.s.FirstName} {f.s.LastName}: {f.Counter}");
+        return resultMethod;
     }
 
     /// <summary>
